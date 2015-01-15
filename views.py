@@ -5,6 +5,19 @@ from rest_framework import permissions, renderers, viewsets, mixins
 from rest_framework.decorators import detail_route
 
 
+def update_class_info(instance):
+    '''
+    function to copy class information from a clas to a character when the
+    class level is updated
+    '''
+    character = instance.character
+    level = 0
+    for clas in character.classes.all():
+        level += clas.level
+
+    character.level = level
+
+
 class SizeViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides a 'list', 'create', 'retrieve',
@@ -104,4 +117,9 @@ class ClassLevelViewSet(viewsets.ModelViewSet):
         instance = serializer.save(owner=self.request.user)
 
         # copy class information
-        instance.character.level += instance.level
+        update_class_info(instance)
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+
+        update_class_info(instance)
