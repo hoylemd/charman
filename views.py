@@ -7,13 +7,14 @@ from rest_framework.decorators import detail_route
 
 def update_class_info(instance):
     '''
-    function to copy class information from a clas to a character when the
+    function to copy class information from a class to a character when the
     class level is updated
     '''
     character = instance.character
     level = 0
     for clas in character.classes.all():
-        level += clas.level
+        class_level = clas.classlevel_set.get(character=character)
+        level += class_level.level
 
     character.level = level
 
